@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      font-size: x-large;
+    }
+    body {
+      height: 100vh;
+      padding: 0;
+      margin: 0;
+      background: black;
+      color: white;
+    }
+    .input {
+      display: flex;
+      flex-direction: column;
+      padding: 0 100px;
+      margin-bottom: 10px;
+    }
+    .input input {
+      height: 10vh;
+      border: 1px solid black;
+      border-radius: 10px;
+      padding: 10px;
+    }
+    .input button {
+      width: 20%;
+      height: 2rem;
+      margin: 10px auto;
+    }
+    .output {
+      display: flex;
+      padding: 0 100px;
+    }
+    .output button {
+      width: 20%;
+    }
+    .output span {
+      width: 80%;
+      background: rgb(133, 133, 133);
+      padding: 10px;
+    }
+  </style>
+  <title>Password_generator</title>
+</head>
+
+<body>
+  <div class="input">
+    <label for="name_value">name</label>
+    <input type="text" id="name_value">
+    <label for="code_value">code</label>
+    <input type="number" id="code_value" max="6">
+    <label for="word_value">word</label>
+    <input type="text" id="word_value">
+    <button id="generate_btn">generate</button>
+  </div>
+  <div class="output">
+    <span id="password_result">here password</span>
+    <button id="password_copier">Copy</button>
+  </div>
+
+<script>
+
+  const name_value = document.querySelector('#name_value');
+  const code_value = document.querySelector('#code_value');
+  const word_value = document.querySelector('#word_value');
+
+  const generate_btn = document.querySelector('#generate_btn');
+  
+  const password_result = document.querySelector('#password_result');
+  const password_copier = document.querySelector('#password_copier');
+
+
+  //generatebutton
+  generate_btn.onclick = ()=> {
+    password_result.innerText = "wait generating..";
+    password_result.innerText = generate_password(name_value.value, code_value.value, word_value.value);
+    password_copier.style.background = 'green';
+    setTimeout(() => {
+      password_copier.style.background = '';
+    }, 1500);
+  }
+  password_copier.onclick = ()=> {
+    if(password_result.innerText){
+      navigator.clipboard.writeText(password_result.innerText);
+      alert('copied✅');
+    }
+  }
+</script>
+<script>
+  const alpha = 'abcdefghijklmnopqrstuvwxyz';
+  function generate_password(thename, code, word) {
+      if(thename == ""){
+        return "you need to add name"
+      }
+      if(code == ""){
+        return "you need to add code"
+      }
+      if(code > 9999){
+        return "max value for code is 9999"
+      }
+      if(thename.length > 25){
+        return "max value for name is 25 letter"
+      }
+      thename.toLowerCase();
+      thename.trim();
+      let letterStart = get_alpha_number(thename[0]);
+      let a1 = '';
+      for (let i = 0; i < thename.length; i++) {
+        let isfound = false;
+        for(let g = 0; g < alpha.length; g++){
+          if(thename[i]==alpha[g]){
+            isfound = true;
+            break;
+          }
+        }
+        if(!isfound){
+          return "only alphabet"
+        }
+        a1 += next_alpha(get_alpha_number(thename[i]), Number(`${letterStart++}${i}`) + code)
+      }
+      a2 = duble_alpha(a1, word);
+      a3 = a1 + "__" + a1.length + "@" + a1.length * 20 + "&" + a2 + a2.length * 3 + next_alpha(get_alpha_number(a1[0]), 2) + a1[1] + a1[2] + a1.slice(-3) + "_-" + a1.length;
+
+      return a3;
+    }
+  function next_alpha(letter, count) {
+      let start = 0;
+      let new_number = letter;
+      while (start < count) {
+        new_number++;
+        if (new_number == alpha.length) {
+          new_number = 0;
+        }
+        start++;
+      }
+      return alpha[new_number]
+    }
+  function duble_alpha(oldpassword, word) {
+      let start = 0;
+      let new_password = '';
+      let new_word = '';
+      while (start < oldpassword.length) {
+        let inside = 0;
+        while (inside < alpha.length) {
+          if (oldpassword[start] == alpha[inside]) {
+            new_password += next_alpha(inside, start + 1);
+          }
+          inside++;
+        }
+
+        start++;
+      }
+      start = 0;
+      while (start < word.length) {
+        let inside = 0;
+        while (inside < alpha.length) {
+          if (word[start] == alpha[inside]) {
+            new_word += next_alpha(inside, 1);
+          }
+          inside++;
+        }
+        start++;
+      }
+      return new_password + new_word
+    }
+  function get_alpha_number(letter) {
+      let start = 0;
+      while (start < alpha.length) {
+        if (letter == alpha[start]) {
+          return start;
+        }
+        start++;
+      }
+    }
+</script>
+</body>
+
+</html>
