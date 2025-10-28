@@ -49,6 +49,7 @@
 </head>
 
 <body>
+  <button id="download_btn">&downarrow;</button>
   <div class="input">
     <label for="name_value">name</label>
     <input type="text" id="name_value">
@@ -64,6 +65,7 @@
   </div>
 
 <script>
+  const download_btn = document.querySelector('#download_btn');
 
   const name_value = document.querySelector('#name_value');
   const code_value = document.querySelector('#code_value');
@@ -90,6 +92,19 @@
       alert('copied✅');
     }
   }
+  download_btn.onclick = () => {
+    const htmlContent = document.documentElement.outerHTML;
+    const blob = new Blob([htmlContent], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "page.html";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
 </script>
 <script>
   const alpha = 'abcdefghijklmnopqrstuvwxyz';
